@@ -18,16 +18,21 @@ import {
   BookOpen,
   ArrowRight,
   Target,
+  ClipboardList,
   Settings,
   FileText,
   Lightbulb,
+  Wrench,
+  Users,
+  Globe,
+  BarChart3,
   X,
   ExternalLink,
   ArrowLeft,
   Download,
   Printer
 } from 'lucide-react';
-import { sdlcSteps, msaTemplate, sowTemplate } from './constants';
+import { sdlcSteps, prdTemplate, gtmTemplate } from './constants';
 
 const IconMap: Record<string, React.ElementType> = {
   MessageCircle,
@@ -36,12 +41,21 @@ const IconMap: Record<string, React.ElementType> = {
   ShieldCheck,
   Rocket,
   ChevronRight,
-  Calendar
+  Calendar,
+  Lightbulb,
+  Target,
+  Sparkles,
+  ClipboardList,
+  Settings,
+  Wrench,
+  Users,
+  Globe,
+  BarChart3
 };
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [view, setView] = useState<'home' | 'MSA' | 'SOW'>('home');
+  const [view, setView] = useState<'home' | 'PRD' | 'GTM'>('home');
   const step = sdlcSteps[currentStep];
 
   const nextStep = () => {
@@ -86,7 +100,7 @@ export default function App() {
   };
 
   if (view !== 'home') {
-    const template = view === 'MSA' ? msaTemplate : sowTemplate;
+    const template = view === 'PRD' ? prdTemplate : gtmTemplate;
     return (
       <div className="min-h-screen bg-[#F0F2F5] py-12 px-4 sm:px-6 lg:px-8 font-sans">
         <div className="max-w-4xl mx-auto">
@@ -198,10 +212,10 @@ export default function App() {
     <div className="min-h-screen bg-[#F8F7F4] text-slate-900 selection:bg-amber-100 font-sans">
       {/* Sidebar Navigation (Desktop) */}
       <aside className="fixed left-0 top-0 bottom-0 w-20 hidden xl:flex flex-col items-center py-8 bg-white border-r border-slate-100 z-50">
-        <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white mb-12">
+        <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white mb-12 shrink-0">
           <BookOpen size={20} />
         </div>
-        <div className="flex-1 flex flex-col gap-4">
+        <div className="flex-1 w-full flex flex-col gap-4 overflow-y-auto overflow-x-hidden sidebar-scroll items-center pb-8">
           {sdlcSteps.map((s, idx) => (
             <button
               key={s.id}
@@ -213,7 +227,7 @@ export default function App() {
                 currentStep === idx ? 'bg-amber-50 text-amber-700 shadow-sm' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
-              <span className="text-xs font-black">0{s.id}</span>
+              <span className="text-xs font-black">{String(s.id).padStart(2, '0')}</span>
               <div className="absolute left-16 px-3 py-1.5 bg-slate-900 text-white text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap uppercase tracking-widest">
                 {s.proTitle}
               </div>
@@ -232,7 +246,7 @@ export default function App() {
               <span className="font-serif font-bold text-lg">ITBA Masterclass</span>
             </div>
             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-              Step 0{step.id} / 0{sdlcSteps.length}
+              Step {String(step.id).padStart(2, '0')} / {String(sdlcSteps.length).padStart(2, '0')}
             </div>
           </div>
         </nav>
@@ -250,15 +264,31 @@ export default function App() {
               <header className="mb-16 lg:mb-24">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                    Phase 0{step.id} • Standard Process
+                    Phase {String(step.id).padStart(2, '0')} • Standard Process
                   </div>
                 </div>
                 <h1 className="text-5xl lg:text-8xl font-serif font-medium leading-[0.95] tracking-tight mb-10 text-slate-900">
                   {step.proTitle}
                 </h1>
-                <p className="text-xl lg:text-3xl text-slate-700 leading-relaxed max-w-4xl font-light text-justify">
-                  {formatText(step.standardProcess)}
-                </p>
+                <div className="flex flex-col lg:flex-row gap-8 items-start">
+                  <p className="text-xl lg:text-3xl text-slate-700 leading-relaxed max-w-4xl font-light text-justify flex-1">
+                    {formatText(step.standardProcess)}
+                  </p>
+                  
+                  {/* Action Buttons for specific steps */}
+                  {(step.id === 3 || step.id === 9) && (
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setView(step.id === 3 ? 'PRD' : 'GTM')}
+                      className="shrink-0 flex items-center gap-3 bg-slate-900 text-white px-8 py-5 rounded-2xl font-bold text-sm shadow-2xl shadow-slate-200 hover:bg-slate-800 transition-all"
+                    >
+                      <FileText size={20} />
+                      {step.id === 3 ? 'Xem PRD mẫu' : 'Xem GTM Plan mẫu'}
+                      <ArrowRight size={18} />
+                    </motion.button>
+                  )}
+                </div>
               </header>
 
               {/* SECTION 2: STORYTELLING ANALOGY */}
@@ -328,110 +358,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* New Detailed Sections for Step 2 */}
-                {step.id === 2 && (
-                  <div className="space-y-8 mb-12">
-                    {/* Contract Models Table */}
-                    <div className="bg-white border-2 border-slate-200 rounded-[40px] overflow-hidden shadow-sm">
-                      <div className="p-8 border-b-2 border-slate-100 bg-slate-50/50 text-center">
-                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900">Các mô hình hợp đồng phổ biến trong Agile</h4>
-                      </div>
-                      <div className="overflow-x-auto">
-                        <table className="w-full border-collapse">
-                          <thead>
-                            <tr className="bg-slate-50/30">
-                              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-r-2 border-slate-100 text-center">Mô hình</th>
-                              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-r-2 border-slate-100 text-center">Đặc điểm</th>
-                              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-r-2 border-slate-100 text-center">Phù hợp khi nào?</th>
-                              <th className="p-6 text-[10px] font-black uppercase tracking-widest text-slate-900 border-b-2 border-slate-100 text-center">Ví dụ thực tế</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {step.contractModels?.map((model, idx) => (
-                              <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                                <td className="p-6 border-b-2 border-r-2 border-slate-100 font-bold text-slate-900 bg-slate-50/20 text-center">{model.name}</td>
-                                <td className="p-6 border-b-2 border-r-2 border-slate-100 text-slate-600 text-sm leading-relaxed">{model.features}</td>
-                                <td className="p-6 border-b-2 border-r-2 border-slate-100 text-slate-600 text-sm leading-relaxed italic">{model.suitability}</td>
-                                <td className="p-6 border-b-2 border-slate-100 text-indigo-600 text-sm leading-relaxed font-medium bg-indigo-50/10">
-                                  <div className="flex gap-2">
-                                    <div className="w-1 h-auto bg-indigo-200 rounded-full shrink-0" />
-                                    {model.example}
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-
-                    <div className="grid gap-8">
-                      {/* Key Contents Grouped */}
-                      <div className="bg-white border border-slate-100 p-10 rounded-[40px]">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-10 text-center">Các nội dung quan trọng cần ký kết (Agile SOW)</h4>
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-                          {step.keyContents?.map((group, idx) => (
-                            <div key={idx} className="space-y-5">
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-amber-400" />
-                                <h5 className="text-[11px] font-black uppercase tracking-wider text-slate-900">
-                                  {group.group}
-                                </h5>
-                              </div>
-                              <ul className="space-y-4">
-                                {group.items.map((item, iIdx) => (
-                                  <li key={iIdx} className="text-slate-600 text-xs leading-relaxed pl-4 border-l border-slate-100 hover:border-amber-200 transition-colors">
-                                    {item}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Advice */}
-                      <div className="bg-indigo-50/30 border border-indigo-100 p-10 rounded-[40px]">
-                        <h4 className="text-xs font-black uppercase tracking-widest text-indigo-500 mb-8 text-center">Lời khuyên chiến lược khi ký kết</h4>
-                        <div className="grid sm:grid-cols-3 gap-8">
-                          {step.advice?.map((item, idx) => (
-                            <div key={idx} className="flex gap-4 items-start bg-white p-6 rounded-3xl shadow-sm border border-indigo-50">
-                              <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 font-bold text-xs">
-                                {idx + 1}
-                              </div>
-                              <p className="text-slate-700 text-xs leading-relaxed font-medium">{item}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Template Buttons */}
-                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button 
-                          onClick={() => {
-                            setView('MSA');
-                            window.scrollTo({ top: 0, behavior: 'instant' });
-                          }}
-                          className="flex items-center justify-center gap-3 bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold text-sm hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
-                        >
-                          <FileText size={18} />
-                          Xem Mẫu MSA (Hợp đồng khung)
-                        </button>
-                        <button 
-                          onClick={() => {
-                            setView('SOW');
-                            window.scrollTo({ top: 0, behavior: 'instant' });
-                          }}
-                          className="flex items-center justify-center gap-3 bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
-                        >
-                          <ExternalLink size={18} />
-                          Xem Mẫu SOW (Phụ lục Agile)
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 {/* Example Banner */}
                 <div className="bg-slate-900 rounded-[40px] p-8 lg:p-12 text-white flex flex-col lg:flex-row items-start lg:items-center gap-8 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/10 rounded-full blur-3xl" />
@@ -446,6 +372,39 @@ export default function App() {
                   </div>
                 </div>
               </section>
+
+              {/* SECTION 4: KEY CONTENTS (NEW) */}
+              {step.keyContents && (
+                <section className="mb-24">
+                  <div className="flex items-center gap-3 mb-10">
+                    <div className="w-10 h-10 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-lg shadow-slate-200">
+                      <ClipboardList size={20} />
+                    </div>
+                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Nội dung trọng tâm (Key Deliverables)</h3>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-8">
+                    {step.keyContents.map((group, gIdx) => (
+                      <div key={gIdx} className="bg-white border border-slate-100 rounded-[40px] p-10">
+                        <h4 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-amber-500" />
+                          {group.group}
+                        </h4>
+                        <div className="flex flex-wrap gap-3">
+                          {group.items.map((item, iIdx) => (
+                            <span 
+                              key={iIdx}
+                              className="px-4 py-2 bg-slate-50 text-slate-600 text-xs font-bold rounded-full border border-slate-100"
+                            >
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* FOOTER NAVIGATION */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-8 pt-12 border-t border-slate-200">
